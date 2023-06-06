@@ -2,15 +2,15 @@
 
 class CustomerController
 {
-    public function index($data)
+    public function create($data)
     {
         // echo "<pre>"; print_r($data); echo "<pre>";
 
         // Validar name
         if (isset($data["name"]) && !preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/' , $data["name"])) {
-            $json=array(
-                "status"=>404,
-                "detail"=>"error en el campo del name permitido solo letras en el name"
+            $json = array(
+                "status" => 404,
+                "detail" => "error in name field allowed only letters in name"
             );
             echo json_encode($json, true);
             return;
@@ -18,9 +18,9 @@ class CustomerController
 
         // Validar last_name
         if (isset($data["last_name"]) && !preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/' , $data["last_name"])) {
-            $json=array(
-                "status"=>404,
-                "detalle"=>"error en el campo del name permitido solo letras en el last_name"
+            $json = array(
+                "status" => 404,
+                "detail" => "error in the name field allowed only letters in the last name"
             );
             echo json_encode($json, true);
             return;
@@ -28,9 +28,9 @@ class CustomerController
 
         // Validar email
 		if (isset($data["email"]) && !preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/', $data["email"])) {
-            $json=array(
-                "status"=>404,
-                "detalle"=>"error en el campo email "
+            $json = array(
+                "status" => 404,
+                "detail" => "error in the email field"
             );
             echo json_encode($json, true);
             return;
@@ -40,9 +40,9 @@ class CustomerController
         $customers = Customer::index("customers");
         foreach ($customers  as $key => $value) {
             if ($value["email"] == $data["email"]) {
-                $json=array(
+                $json = array(
                     "status"=>404,
-                    "detalle"=> "el email esta repetido"
+                    "detail"=> "the email is repeated"
                 ); 
                 echo json_encode($json, true);
                 return;
@@ -66,16 +66,14 @@ class CustomerController
         $create = Customer::create("customers", $data);
 
         if ($create == "ok") {
-            $json=array(
-                "status"=>404,
-                "detalle"=> "se genero sus credenciales",
-                "customer_id"=>$customer_id,
-                "secret_key"=>$secret_key
+            $json = array(
+                "status" => 404,
+                "detail" => "your credentials are generated",
+                "customer_id" => $customer_id,
+                "secret_key" => $secret_key
             );
             echo json_encode($json, true);
             return;
         }
     }
 }
-
-?>
