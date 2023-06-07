@@ -41,8 +41,8 @@ class CustomerController
         foreach ($customers  as $key => $value) {
             if ($value["email"] == $data["email"]) {
                 $json = array(
-                    "status"=>404,
-                    "detail"=> "the email is repeated"
+                    "status" => 404,
+                    "detail" => "the email is repeated"
                 ); 
                 echo json_encode($json, true);
                 return;

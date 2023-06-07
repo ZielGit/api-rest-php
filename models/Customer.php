@@ -5,15 +5,16 @@ require_once "connection.php";
 class Customer
 {    
     // Mostrar todos los registros
-    static public function index($table){
+    static public function index($table)
+    {
         $stmt = Connection::connect()->prepare("SELECT * FROM $table");
         $stmt->execute();
         return $stmt->fetchAll();
-        $stmt->close();
-        $stmt=null;
+        $stmt = null;
     }
 
-    static public function create($table, $data){
+    static public function create($table, $data)
+    {
         $stmt = Connection::connect()->prepare("INSERT INTO $table(name, last_name, email, customer_id, secret_key, created_at, updated_at) VALUES (:name, :last_name, :email, :customer_id, :secret_key, :created_at, :updated_at)");
        	$stmt->bindParam(":name", $data["name"], PDO::PARAM_STR);
 		$stmt->bindParam(":last_name", $data["last_name"], PDO::PARAM_STR);
@@ -29,7 +30,6 @@ class Customer
 			print_r(Connection::connect()->errorInfo());
 		}
 
-        $stmt-> close();
 		$stmt = null;
     }
 }

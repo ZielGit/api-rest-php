@@ -14,8 +14,7 @@ class Course
 
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS);
-        $stmt->close();
-        $stmt=null;
+        $stmt = null;
     }
 
     static public function create($table, $data)
@@ -30,13 +29,12 @@ class Course
 		$stmt->bindParam(":created_at", $data["created_at"], PDO::PARAM_STR);
 		$stmt->bindParam(":updated_at", $data["updated_at"], PDO::PARAM_STR);
 
-        if($stmt -> execute()){
+        if($stmt->execute()){
 			return "ok";
 		}else{
 			print_r(Connection::connect()->errorInfo());
 		}
 
-		$stmt-> close();
 		$stmt = null;
     }
 
@@ -46,8 +44,7 @@ class Course
         $stmt->bindParam(":id", $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS);
-        $stmt->close();
-        $stmt=null;
+        $stmt = null;
     }
 
     static public function update($table , $data)
@@ -61,19 +58,18 @@ class Course
 		$stmt->bindParam(":price", $data["price"], PDO::PARAM_STR);
 		$stmt->bindParam(":updated_at", $data["updated_at"], PDO::PARAM_STR);
 
-        if ($stmt -> execute()) {
+        if ($stmt->execute()) {
 			return "ok";
 		} else {
 			print_r(Connection::connect()->errorInfo());
 		}
 
-		$stmt-> close();
 		$stmt = null;
     }
 
     static public function delete($table, $id)
     {
-        $stmt = Connection::connect()->prepare("DELETE  FROM $table WHERE id = :id");
+        $stmt = Connection::connect()->prepare("DELETE FROM $table WHERE id = :id");
         $stmt->bindParam(":id", $id, PDO::PARAM_INT);
 
         if($stmt->execute()){
@@ -82,7 +78,6 @@ class Course
             print_r(Connection::connect()->errorInfo());
         }
 
-	    $stmt-> close();
 		$stmt = null;
     }
 }
