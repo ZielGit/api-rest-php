@@ -41,7 +41,7 @@ class CourseController
             foreach ($customers as $key => $valueCustomer) {
                 if (
                     base64_encode($_SERVER['PHP_AUTH_USER'] . ":" . $_SERVER['PHP_AUTH_PW']) ==
-                    base64_encode($valueCustomer["id_cliente"] . ":" . $valueCustomer["llave_secreta"])
+                    base64_encode($valueCustomer["customer_id"] . ":" . $valueCustomer["secret_key"])
                 ) {
                     // Validar data
                     foreach ($data as $key => $valueDatos) {
@@ -119,7 +119,7 @@ class CourseController
             foreach ($customers as $key => $valueCustomer) {
                 if (
                     base64_encode($_SERVER['PHP_AUTH_USER'] . ":" . $_SERVER['PHP_AUTH_PW']) ==
-                    base64_encode($valueCustomer["id_cliente"] . ":" . $valueCustomer["llave_secreta"])
+                    base64_encode($valueCustomer["customer_id"] . ":" . $valueCustomer["secret_key"])
                 ) {
                     // Mostrar todos los courses
                     $curso = Course::show("courses", "customers", $id);
@@ -152,7 +152,7 @@ class CourseController
             foreach ($customers as $key => $valueCustomer) {
                 if (
                     "Basic " . base64_encode($_SERVER['PHP_AUTH_USER'] . ":" . $_SERVER['PHP_AUTH_PW']) ==
-                    "Basic " . base64_encode($valueCustomer["id_cliente"] . ":" . $valueCustomer["llave_secreta"])
+                    "Basic " . base64_encode($valueCustomer["customer_id"] . ":" . $valueCustomer["secret_key"])
                 ) {
                     // Validar data
                     foreach ($data as $key => $valueDatos) {
@@ -214,7 +214,7 @@ class CourseController
             foreach ($customers as $key => $valueCustomer) {
                 if (
                     "Basic " . base64_encode($_SERVER['PHP_AUTH_USER'] . ":" . $_SERVER['PHP_AUTH_PW']) ==
-                    "Basic " . base64_encode($valueCustomer["id_cliente"] . ":" . $valueCustomer["llave_secreta"])
+                    "Basic " . base64_encode($valueCustomer["customer_id"] . ":" . $valueCustomer["secret_key"])
                 ) {
                     // Validar id creador
                     $curso = Course::show("courses", "customers", $id);
