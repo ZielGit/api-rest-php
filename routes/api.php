@@ -2,8 +2,9 @@
 
 $arrayRoutes = explode("/",$_SERVER['REQUEST_URI']);
 
-// El arrayRoutes esta basado en servidor virtual (siendo la base 0, 1 la primera ruaa y 2 una sub ruta)
+// El arrayRoutes esta basado en servidor virtual (siendo la base 0, 1 la primera ruta y 2 una sub ruta)
 // Cambiar segun la raiz de su proyecto
+// La api tiene protección se tiene que usar Basic Auth (Username: customer_id, Password: secret_key)
 // echo "<pre>"; print_r($arrayRoutes); echo "<pre>";
 
 if (isset($_GET["page"]) && is_numeric($_GET["page"])) {
