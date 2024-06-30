@@ -7,7 +7,7 @@ use PDO;
 class Customer
 {
     private $conn;
-    private $table_name = "customers";
+    private $table = 'customers';
 
     public function __construct($db)
     {
@@ -17,16 +17,16 @@ class Customer
     // Mostrar todos los registros
     public function index()
     {
-        $query = "SELECT * FROM ". $this->table_name;
+        $query = "SELECT * FROM ". $this->table;
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll();
         $stmt = null;
     }
 
-    public function create($table, $data)
+    public function create($data)
     {
-        $query = "INSERT INTO $table(name, last_name, email, customer_id, secret_key, created_at, updated_at) VALUES (:name, :last_name, :email, :customer_id, :secret_key, :created_at, :updated_at)";
+        $query = "INSERT INTO " . $this->table . " (name, last_name, email, customer_id, secret_key, created_at, updated_at) VALUES (:name, :last_name, :email, :customer_id, :secret_key, :created_at, :updated_at)";
         $stmt = $this->conn->prepare($query);
        	$stmt->bindParam(":name", $data["name"], PDO::PARAM_STR);
 		$stmt->bindParam(":last_name", $data["last_name"], PDO::PARAM_STR);
@@ -45,5 +45,3 @@ class Customer
 		$stmt = null;
     }
 }
-
-?>

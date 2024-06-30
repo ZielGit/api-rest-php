@@ -3,9 +3,20 @@
 namespace App\Controllers;
 
 use App\Models\Customer;
+use Config\Database;
 
 class CustomerController
 {
+    private $db;
+    private $customer;
+
+    public function __construct()
+    {
+        $database = new Database();
+        $this->db = $database->getConnection();
+        $this->customer = new Customer($this->db);
+    }
+
     public function create($data)
     {
         // Validar name
@@ -39,7 +50,7 @@ class CustomerController
         }
 
         // Validar el email repetido
-        $customers = Customer::index("customers");
+        $customers = $this->customer->index();
         foreach ($customers  as $key => $value) {
             if ($value["email"] == $data["email"]) {
                 $json = array(
@@ -65,7 +76,7 @@ class CustomerController
             "updated_at" => date('Y-m-d h:i:s')
 		);
 
-        $create = Customer::create("customers", $data);
+        $create = $this->customer->create($data);
 
         if ($create == "ok") {
             $json = array(

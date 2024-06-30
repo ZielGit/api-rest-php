@@ -7,28 +7,27 @@ use PDO;
 class Course
 {
     private $conn;
+    private $table = 'courses';
 
     public function __construct($db)
     {
         $this->conn = $db;
     }
 
-    public function index($table1, $table2, $quantity, $from)
+    public function index()
     {
-        if ($quantity != null) {
-            $stmt = $this->conn->prepare("SELECT $table1.id, $table1.title, $table1.description, $table1.instructor, $table1.image, $table1.price, $table1.creator_id, $table2.name, $table2.last_name FROM $table1 INNER JOIN $table2 ON $table1.creator_id = $table2.id LIMIT $from, $quantity");
-        } else {
-            $stmt = $this->conn->prepare("SELECT $table1.id, $table1.title, $table1.description, $table1.instructor, $table1.image, $table1.price, $table1.creator_id, $table2.name, $table2.last_name FROM $table1 INNER JOIN $table2 ON $table1.creator_id = $table2.id");
-        }
+        $query = "SELECT courses.id, courses.title, courses.description, courses.instructor, courses.image, courses.price, courses.creator_id, customers.name, customers.last_name FROM courses INNER JOIN customers ON courses.creator_id = customers.id";
+        $stmt = $this->conn->prepare($query);
 
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS);
         $stmt = null;
     }
 
-    public function create($table, $data)
+    public function create($data)
     {
-        $stmt = $this->conn->prepare("INSERT INTO $table(title, description, instructor, image, price, creator_id, created_at, updated_at) VALUES (:title, :description, :instructor, :image, :price, :creator_id, :created_at, :updated_at)");
+        $query = "INSERT INTO " . $this->table . " (title, description, instructor, image, price, creator_id, created_at, updated_at) VALUES (:title, :description, :instructor, :image, :price, :creator_id, :created_at, :updated_at)";
+        $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":title", $data["title"], PDO::PARAM_STR);
 		$stmt->bindParam(":description", $data["description"], PDO::PARAM_STR);
 		$stmt->bindParam(":instructor", $data["instructor"], PDO::PARAM_STR);
@@ -47,9 +46,9 @@ class Course
 		$stmt = null;
     }
 
-    public function show($table1 ,$table2, $id)
+    public function show($id)
     {
-        $query = "SELECT $table1.id, $table1.title, $table1.description, $table1.instructor, $table1.image, $table1.price, $table1.creator_id ,$table2.name, $table2.last_name FROM $table1 INNER JOIN $table2 ON $table1.creator_id = $table2.id WHERE $table1.id = :id";
+        $query = "SELECT courses.id, courses.title, courses.description, courses.instructor, courses.image, courses.price, courses.creator_id, customers.name, customers.last_name FROM courses INNER JOIN customers ON courses.creator_id = customers.id WHERE courses.id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id", $id, PDO::PARAM_INT);
         $stmt->execute();
@@ -57,9 +56,10 @@ class Course
         $stmt = null;
     }
 
-    public function update($table , $data)
+    public function update($data)
     {
-        $stmt = $this->conn->prepare("UPDATE courses SET title = :title, description = :description, instructor = :instructor, image = :image, price = :price,updated_at = :updated_at WHERE id = :id");
+        $query = "UPDATE " . $this->table . " SET title = :title, description = :description, instructor = :instructor, image = :image, price = :price,updated_at = :updated_at WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id", $data["id"], PDO::PARAM_STR);
         $stmt->bindParam(":title", $data["title"], PDO::PARAM_STR);
 		$stmt->bindParam(":description", $data["description"], PDO::PARAM_STR);
@@ -77,9 +77,9 @@ class Course
 		$stmt = null;
     }
 
-    public function delete($table, $id)
+    public function delete($id)
     {
-        $stmt = $this->conn->prepare("DELETE FROM $table WHERE id = :id");
+        $stmt = $this->conn->prepare("DELETE FROM " . $this->table . " WHERE id = :id");
         $stmt->bindParam(":id", $id, PDO::PARAM_INT);
 
         if($stmt->execute()){
@@ -91,5 +91,3 @@ class Course
 		$stmt = null;
     }
 }
-
-?>

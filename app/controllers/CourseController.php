@@ -20,10 +20,10 @@ class CourseController
         $this->customer = new Customer($this->db);
     }
 
-    public function index($page)
+    public function index()
     {
         // Validar credenciales del cliente
-        $customers = $this->customer->index($page);
+        $customers = $this->customer->index();
 
         if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
             foreach ($customers as $key => $value) {
@@ -31,13 +31,8 @@ class CourseController
                     base64_encode($_SERVER['PHP_AUTH_USER'] . ":" . $_SERVER['PHP_AUTH_PW']) ==
                     base64_encode($value["customer_id"] . ":" . $value["secret_key"])
                 ) {
-                    if ($page != null) {
-                        $quantity = 10;
-                        $from = ($page - 1) * $quantity;
-                        $courses = $this->course->index("courses", "customers", $quantity, $from);
-                    } else {
-                        $courses = $this->course->index("courses", "customers", null, null);
-                    }
+                    $courses = $this->course->index();
+
                     $json = array(
                         "status" => 200,
                         "total_records" => count($courses),
@@ -53,7 +48,7 @@ class CourseController
     public function create($data)
     {
         // Validar credenciales del cliente
-        $customers = Customer::index("customers");
+        $customers = $this->customer->index();
 
         if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
             foreach ($customers as $key => $valueCustomer) {
@@ -74,7 +69,7 @@ class CourseController
                     }
 
                     // Validar que el title o la description no estén repetidos
-                    $courses = Course::index("courses", "customers", null, null);
+                    $courses = $this->course->index();
 
                     foreach ($courses as $key => $value) {
                         if ($value->title == $data["title"]) {
@@ -108,7 +103,7 @@ class CourseController
                         "updated_at" => date('Y-m-d h:i:s')
                     );
 
-                    $create = Course::create("courses", $data);
+                    $create = $this->course->create($data);
 
                     // Respuesta del modelo
                     if ($create == "ok") {
@@ -132,7 +127,7 @@ class CourseController
     public function show($id)
     {
         // Validar credenciales del cliente
-        $customers = $this->customer->index("customers");
+        $customers = $this->customer->index();
         if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
             foreach ($customers as $key => $valueCustomer) {
                 if (
@@ -165,7 +160,7 @@ class CourseController
     public function update($id, $data)
     {
         // Validar credenciales del cliente
-        $customers = Customer::index("customers");
+        $customers = $this->customer->index();
         if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
             foreach ($customers as $key => $valueCustomer) {
                 if (
@@ -186,7 +181,7 @@ class CourseController
                     }
 
                     // Validar id creador
-                    $curso = Course::show("courses", "customers", $id);
+                    $curso = $this->course->show($id);
                     foreach ($curso as $key => $valueCourse) {
                         if ($valueCourse->creator_id == $valueCustomer["id"]) {
                             // Llevar data al modelo
@@ -200,7 +195,7 @@ class CourseController
                                 "updated_at" => date('Y-m-d h:i:s')
                             );
 
-                            $update = Course::update("courses", $data);
+                            $update = $this->course->update($data);
                             if ($update == "ok") {
                                 $json = array(
                                     "status" => 200,
@@ -226,7 +221,7 @@ class CourseController
     public function delete($id)
     {
         // Validar credenciales del cliente
-        $customers = Customer::index("customers");
+        $customers = $this->customer->index();
 
         if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
             foreach ($customers as $key => $valueCustomer) {
@@ -235,11 +230,11 @@ class CourseController
                     "Basic " . base64_encode($valueCustomer["customer_id"] . ":" . $valueCustomer["secret_key"])
                 ) {
                     // Validar id creador
-                    $curso = Course::show("courses", "customers", $id);
+                    $curso = $this->course->show($id);
                     foreach ($curso as $key => $valueCourse) {
                         if ($valueCourse->creator_id == $valueCustomer["id"]) {
                             // Llevar data al modelo
-                            $delete = Course::delete("courses", $id);
+                            $delete = $this->course->delete($id);
                             if ($delete == "ok") {
                                 $json = array(
                                     "status" => 200,
