@@ -1,11 +1,13 @@
 <?php
 
+namespace App\Controllers;
+
+use App\Models\Customer;
+
 class CustomerController
 {
     public function create($data)
     {
-        // echo "<pre>"; print_r($data); echo "<pre>";
-
         // Validar name
         if (isset($data["name"]) && !preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/' , $data["name"])) {
             $json = array(

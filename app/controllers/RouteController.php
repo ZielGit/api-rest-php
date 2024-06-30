@@ -1,4 +1,7 @@
 <?php
+
+namespace App\Controllers;
+
 class RouteController
 {
     public function index()
@@ -6,4 +9,3 @@ class RouteController
         include "routes/api.php";
     }
 }
-?>

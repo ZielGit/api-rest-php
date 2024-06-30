@@ -1,12 +1,19 @@
 <?php
-require __DIR__ . '/../vendor/autoload.php';
 
+namespace Config;
+
+use PDO;
+use PDOException;
 use Dotenv\Dotenv;
 
+require __DIR__ . '/../vendor/autoload.php';
+
+// Cargar las variables de entorno
 $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
-class Database {
+class Database
+{
     private $host;
     private $db_name;
     private $username;

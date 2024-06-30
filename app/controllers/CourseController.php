@@ -1,11 +1,29 @@
 <?php
 
+namespace App\Controllers;
+
+use App\Models\Course;
+use App\Models\Customer;
+use Config\Database;
+
 class CourseController
 {
+    private $db;
+    private $course;
+    private $customer;
+
+    public function __construct()
+    {
+        $database = new Database();
+        $this->db = $database->getConnection();
+        $this->course = new Course($this->db);
+        $this->customer = new Customer($this->db);
+    }
+
     public function index($page)
     {
         // Validar credenciales del cliente
-        $customers = Customer::index("customers");
+        $customers = $this->customer->index($page);
 
         if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
             foreach ($customers as $key => $value) {
@@ -16,9 +34,9 @@ class CourseController
                     if ($page != null) {
                         $quantity = 10;
                         $from = ($page - 1) * $quantity;
-                        $courses = Course::index("courses", "customers", $quantity, $from);
+                        $courses = $this->course->index("courses", "customers", $quantity, $from);
                     } else {
-                        $courses = Course::index("courses", "customers", null, null);
+                        $courses = $this->course->index("courses", "customers", null, null);
                     }
                     $json = array(
                         "status" => 200,
@@ -114,7 +132,7 @@ class CourseController
     public function show($id)
     {
         // Validar credenciales del cliente
-        $customers = Customer::index("customers");
+        $customers = $this->customer->index("customers");
         if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
             foreach ($customers as $key => $valueCustomer) {
                 if (
@@ -122,14 +140,14 @@ class CourseController
                     base64_encode($valueCustomer["customer_id"] . ":" . $valueCustomer["secret_key"])
                 ) {
                     // Mostrar todos los courses
-                    $curso = Course::show("courses", "customers", $id);
+                    $curso = $this->course->show("courses", "customers", $id);
                     if (!empty($curso)) {
                         $json = array(
                             "status" => 200,
                             "detail" => $curso
                         );
                         echo json_encode($json, true);
-                        return;
+                        // return;
                     } else {
                         $json = array(
                             "status" => 200,
@@ -137,7 +155,7 @@ class CourseController
                             "details" => "There is no registered course"
                         );
                         echo json_encode($json, true);
-                        return;
+                        // return;
                     }
                 }
             }
@@ -237,5 +255,3 @@ class CourseController
         }
     }
 }
-
-?>

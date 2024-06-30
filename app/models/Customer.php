@@ -1,21 +1,33 @@
 <?php
 
-require_once "connection.php";
+namespace App\Models;
+
+use PDO;
 
 class Customer
-{    
-    // Mostrar todos los registros
-    static public function index($table)
+{
+    private $conn;
+    private $table_name = "customers";
+
+    public function __construct($db)
     {
-        $stmt = Connection::connect()->prepare("SELECT * FROM $table");
+        $this->conn = $db;
+    }
+
+    // Mostrar todos los registros
+    public function index()
+    {
+        $query = "SELECT * FROM ". $this->table_name;
+        $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll();
         $stmt = null;
     }
 
-    static public function create($table, $data)
+    public function create($table, $data)
     {
-        $stmt = Connection::connect()->prepare("INSERT INTO $table(name, last_name, email, customer_id, secret_key, created_at, updated_at) VALUES (:name, :last_name, :email, :customer_id, :secret_key, :created_at, :updated_at)");
+        $query = "INSERT INTO $table(name, last_name, email, customer_id, secret_key, created_at, updated_at) VALUES (:name, :last_name, :email, :customer_id, :secret_key, :created_at, :updated_at)";
+        $stmt = $this->conn->prepare($query);
        	$stmt->bindParam(":name", $data["name"], PDO::PARAM_STR);
 		$stmt->bindParam(":last_name", $data["last_name"], PDO::PARAM_STR);
 		$stmt->bindParam(":email", $data["email"], PDO::PARAM_STR);
@@ -27,7 +39,7 @@ class Customer
         if($stmt->execute()){
             return "ok";
         }else{
-			print_r(Connection::connect()->errorInfo());
+			print_r($this->conn->errorInfo());
 		}
 
 		$stmt = null;
