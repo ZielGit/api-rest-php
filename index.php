@@ -1,5 +1,6 @@
 <?php
 
+require 'vendor/autoload.php';
 require_once "controllers/CourseController.php";
 require_once "controllers/CustomerController.php";
 require_once "controllers/RouteController.php";

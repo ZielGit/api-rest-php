@@ -1,0 +1,14 @@
+{
+    "name": "php/api_rest",
+    "description": "A base application of a rest api with pure php",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Frans",
+            "email": "frans_421_12@hotmail.com"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    }
+}
