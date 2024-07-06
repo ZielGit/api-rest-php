@@ -26,6 +26,7 @@ class Course
 
     public function create($data)
     {
+        var_dump($data);
         $query = "INSERT INTO " . $this->table . " (title, description, instructor, image, price, creator_id, created_at, updated_at) VALUES (:title, :description, :instructor, :image, :price, :creator_id, :created_at, :updated_at)";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":title", $data["title"], PDO::PARAM_STR);

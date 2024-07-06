@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Api;
 
 use App\Models\Course;
 use App\Models\Customer;
@@ -45,8 +45,10 @@ class CourseController
         }
     }
 
-    public function create($data)
+    public function create()
     {
+        $data = json_decode(file_get_contents("php://input"), true);
+        // var_dump($data);
         // Validar credenciales del cliente
         $customers = $this->customer->index();
 
@@ -67,10 +69,10 @@ class CourseController
                             return;
                         }
                     }
-
-                    // Validar que el title o la description no estén repetidos
+                    
                     $courses = $this->course->index();
 
+                    // Validar que el title o la description no estén repetidos
                     foreach ($courses as $key => $value) {
                         if ($value->title == $data["title"]) {
                             $json = array(
@@ -157,8 +159,9 @@ class CourseController
         }
     }
 
-    public function update($id, $data)
+    public function update($id)
     {
+        $data = json_decode(file_get_contents("php://input"), true);
         // Validar credenciales del cliente
         $customers = $this->customer->index();
         if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {

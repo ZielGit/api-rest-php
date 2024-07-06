@@ -2,10 +2,10 @@
 
 namespace App\Controllers;
 
-class RouteController
+class HomeController
 {
     public function index()
     {
-        include "routes/api.php";
+        var_dump('Home view');
     }
 }
