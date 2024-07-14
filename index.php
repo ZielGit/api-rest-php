@@ -2,6 +2,7 @@
 require __DIR__ . '/vendor/autoload.php';
 
 use Core\Library\Router;
+use Config\Database;
 use Dotenv\Dotenv;
 
 $dotenv = Dotenv::createImmutable(__DIR__);
@@ -9,6 +10,9 @@ $dotenv->load();
 
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
+
+// Obtener el EntityManager
+$entityManager = Database::getEntityManager();
 
 $router = new Router;
 
@@ -22,4 +26,5 @@ $router->group('/api', $apiRoutes);
 // Cargar las rutas web
 $webRoutes($router);
 
-$router->run();
+// Ejecutar el enrutador y pasar el EntityManager
+$router->run($entityManager);

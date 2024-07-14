@@ -7,12 +7,13 @@ use App\Controllers\NotFoundController;
 use Closure;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
+use Doctrine\ORM\EntityManager;
 use function FastRoute\simpleDispatcher;
 
 class Router
 {
-    private array $routes = []; // Inicializar como un array vacío
-    private array $group = [];  // Inicializar como un array vacío
+    private array $routes = [];
+    private array $group = [];
 
     public function group(string $prefix, Closure $callback)
     {
@@ -24,7 +25,7 @@ class Router
         $this->routes[] = [$method, $uri, $controller];
     }
 
-    private function group_routes(RouteCollector $r)
+    private function groupRoutes(RouteCollector $r)
     {
         foreach ($this->group as $prefix => $routes) {
             $r->addGroup($prefix, function (RouteCollector $r) use ($routes) {
@@ -33,11 +34,11 @@ class Router
         }
     }
 
-    public function run()
+    public function run(EntityManager $entityManager)
     {
         $dispatcher = simpleDispatcher(function (RouteCollector $r) {
             if (!empty($this->group)) {
-                $this->group_routes($r);
+                $this->groupRoutes($r);
             }
 
             foreach ($this->routes as $route) {
@@ -54,26 +55,22 @@ class Router
 
         $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
 
-        $this->handle($routeInfo);
+        $this->handle($routeInfo, $entityManager);
     }
 
-    private function handle(array $routeInfo)
+    private function handle(array $routeInfo, EntityManager $entityManager)
     {
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
-                // ... 404 Not Found
                 call_user_func_array([new NotFoundController, 'index'], []);
-
                 break;
             case Dispatcher::METHOD_NOT_ALLOWED:
                 call_user_func_array([new MethodNotAllowedController, 'index'], []);
-
                 break;
             case Dispatcher::FOUND:
-                [,[$controller,$method], $vars] = $routeInfo;
-
-                call_user_func_array([new $controller, $method], $vars);
-                // ... call $handler with $vars
+                [, [$controller, $method], $vars] = $routeInfo;
+                $controllerInstance = new $controller($entityManager);
+                call_user_func_array([$controllerInstance, $method], $vars);
                 break;
         }
     }

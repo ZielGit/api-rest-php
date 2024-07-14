@@ -2,11 +2,12 @@
 
 namespace Config;
 
-use PDO;
-use PDOException;
-use Dotenv\Dotenv;
-
 require __DIR__ . '/../vendor/autoload.php';
+
+use Doctrine\DBAL\DriverManager;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\ORMSetup;
+use Dotenv\Dotenv;
 
 // Cargar las variables de entorno
 $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
@@ -14,29 +15,27 @@ $dotenv->load();
 
 class Database
 {
-    private $host;
-    private $db_name;
-    private $username;
-    private $password;
-    public $conn;
-
-    public function __construct()
+    public static function getEntityManager()
     {
-        $this->host = $_ENV['DB_HOST'];
-        $this->db_name = $_ENV['DB_DATABASE'];
-        $this->username = $_ENV['DB_USERNAME'];
-        $this->password = $_ENV['DB_PASSWORD'];
-    }
+        $paths = [__DIR__ . '/../app/Entity']; // Ajusta la ruta a tu carpeta de entidades
+        $isDevMode = true;
 
-    public function getConnection()
-    {
-        $this->conn = null;
-        try {
-            $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);
-            $this->conn->exec("set names utf8");
-        } catch(PDOException $exception) {
-            echo "Connection error: " . $exception->getMessage();
-        }
-        return $this->conn;
+        // Configuración de conexión a la base de datos
+        $dbParams = [
+            'driver'   => 'pdo_mysql',
+            'host'     => $_ENV['DB_HOST'],
+            'user'     => $_ENV['DB_USERNAME'],
+            'password' => $_ENV['DB_PASSWORD'],
+            'dbname'   => $_ENV['DB_DATABASE'],
+        ];
+
+        // Crear configuración de metadatos para anotaciones
+        $config = ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode);
+
+        // Configurar la conexión de la base de datos
+        $connection = DriverManager::getConnection($dbParams, $config);
+
+        // Obtener el EntityManager
+        return new EntityManager($connection, $config);
     }
 }
