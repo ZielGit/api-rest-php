@@ -1,0 +1,12 @@
+<?php
+
+use Doctrine\ORM\Tools\Console\ConsoleRunner;
+use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
+use Config\Database;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+// Obtener el EntityManager desde la configuración de base de datos
+$entityManager = Database::getEntityManager();
+
+return ConsoleRunner::run(new SingleManagerProvider($entityManager));
