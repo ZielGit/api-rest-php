@@ -1,8 +1,8 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
 
-use Core\Library\Router;
 use Config\Database;
+use Config\FastRouter;
 use Dotenv\Dotenv;
 
 $dotenv = Dotenv::createImmutable(__DIR__);
@@ -14,7 +14,7 @@ header("Content-Type: application/json; charset=UTF-8");
 // Obtener el EntityManager
 $entityManager = Database::getEntityManager();
 
-$router = new Router;
+$router = new FastRouter;
 
 // Cargar las rutas API y web
 $apiRoutes = require __DIR__ . '/routes/api.php';

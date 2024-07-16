@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Library;
+namespace Config;
 
 use App\Controllers\MethodNotAllowedController;
 use App\Controllers\NotFoundController;
@@ -10,7 +10,7 @@ use FastRoute\RouteCollector;
 use Doctrine\ORM\EntityManager;
 use function FastRoute\simpleDispatcher;
 
-class Router
+class FastRouter
 {
     private array $routes = [];
     private array $group = [];
