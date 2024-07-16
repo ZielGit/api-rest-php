@@ -3,6 +3,7 @@
 namespace App\Controllers\Api;
 
 use App\Entity\Customer;
+use App\Middleware\AuthMiddleware;
 use Doctrine\ORM\EntityManager;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\Serializer\Serializer;
@@ -24,17 +25,14 @@ class CustomerController
         ];
         $encoders = [new JsonEncoder()];
         $this->serializer = new Serializer($normalizers, $encoders);
+
+        // Verificar autenticación
+        $auth = new AuthMiddleware();
+        $auth->handle();
     }
 
     public function index()
     {
-        // Validar credenciales del cliente
-        if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW'])) {
-            http_response_code(401);
-            echo json_encode(['message' => 'Unauthorized']);
-            return;
-        }
-
         $customerRepository = $this->entityManager->getRepository(Customer::class);
         $customers = $customerRepository->findAll();
 
@@ -44,15 +42,7 @@ class CustomerController
 
     public function create()
     {
-        // Validar credenciales del cliente
-        if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW'])) {
-            http_response_code(401);
-            echo json_encode(['message' => 'Unauthorized']);
-            return;
-        }
-
         $data = json_decode(file_get_contents("php://input"), true);
-
 
         // Validar datos de entrada
         foreach (['name', 'last_name', 'email'] as $field) {
@@ -62,6 +52,16 @@ class CustomerController
                 return;
             }
         }
+
+        // Validar email
+		// if (isset($data["email"]) && !preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/', $data["email"])) {
+        //     $json = array(
+        //         "status" => 404,
+        //         "detail" => "error in the email field"
+        //     );
+        //     echo json_encode($json, true);
+        //     return;
+        // }
 
         $customer = new Customer();
         $customer->setName($data['name']);
@@ -82,54 +82,10 @@ class CustomerController
             http_response_code(500);
             echo json_encode(['message' => 'An error occurred']);
         }
-
-        // // Validar email
-		// if (isset($data["email"]) && !preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/', $data["email"])) {
-        //     $json = array(
-        //         "status" => 404,
-        //         "detail" => "error in the email field"
-        //     );
-        //     echo json_encode($json, true);
-        //     return;
-        // }
-
-        // // Generar credenciales del cliente
-        // $customer_id= str_replace("$","c",crypt($data["name"].$data["last_name"].$data["email"] ,'$2a$07$afartwetsdAD52356FEDGsfhsd$'));
-        // $secret_key= str_replace("$","a",crypt($data["email"].$data["last_name"].$data["name"] ,'$2a$07$afartwetsdAD52356FEDGsfhsd$'));
-
-        // $data = array(
-        //     "name" => $data["name"],
-        //     "last_name" => $data["last_name"],
-        //     "email" => $data["email"],
-        //     "customer_id" => $customer_id,
-        //     "secret_key" => $secret_key,
-        //     "created_at" => date('Y-m-d h:i:s'),
-        //     "updated_at" => date('Y-m-d h:i:s')
-		// );
-
-        // $create = $this->customer->create($data);
-
-        // if ($create == "ok") {
-        //     $json = array(
-        //         "status" => 404,
-        //         "detail" => "your credentials are generated",
-        //         "customer_id" => $customer_id,
-        //         "secret_key" => $secret_key
-        //     );
-        //     echo json_encode($json, true);
-        //     return;
-        // }
     }
 
     public function show($id)
     {
-        // Validar credenciales del cliente
-        if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW'])) {
-            http_response_code(401);
-            echo json_encode(['message' => 'Unauthorized']);
-            return;
-        }
-
         $customer = $this->entityManager->find(Customer::class, $id);
 
         if ($customer) {
@@ -143,13 +99,6 @@ class CustomerController
 
     public function update($id)
     {
-        // Validar credenciales del cliente
-        if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW'])) {
-            http_response_code(401);
-            echo json_encode(['message' => 'Unauthorized']);
-            return;
-        }
-
         $data = json_decode(file_get_contents("php://input"), true);
 
         $customer = $this->entityManager->find(Customer::class, $id);
@@ -167,42 +116,10 @@ class CustomerController
             http_response_code(404);
             echo json_encode(['message' => 'customer not found']);
         }
-
-        // if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
-        //     foreach ($customers as $key => $valueCustomer) {
-        //         if (
-        //             "Basic " . base64_encode($_SERVER['PHP_AUTH_USER'] . ":" . $_SERVER['PHP_AUTH_PW']) ==
-        //             "Basic " . base64_encode($valueCustomer["customer_id"] . ":" . $valueCustomer["secret_key"])
-        //         ) {
-        //             // Validar id creador
-        //             $curso = $this->customer->show($id);
-        //             foreach ($curso as $key => $valuecustomer) {
-        //                 if ($valuecustomer->creator_id == $valueCustomer["id"]) {
-        //                     // Llevar data al modelo
-        //                     $data = array(
-        //                         "id" => $id,
-        //                         "title" => $data["title"],
-        //                         "description" => $data["description"],
-        //                         "instructor" => $data["instructor"],
-        //                         "image" => $data["image"],
-        //                         "price" => $data["price"]
-        //                     );
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
     }
 
     public function delete($id)
     {
-        // Validar credenciales del cliente
-        if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW'])) {
-            http_response_code(401);
-            echo json_encode(['message' => 'Unauthorized']);
-            return;
-        }
-
         $customer = $this->entityManager->find(Customer::class, $id);
 
         if ($customer) {
