@@ -10,7 +10,7 @@ use FastRoute\RouteCollector;
 use Doctrine\ORM\EntityManager;
 use function FastRoute\simpleDispatcher;
 
-class FastRouter
+class FastRoute
 {
     private array $routes = [];
     private array $group = [];
