@@ -1,9 +1,15 @@
 <?php
 
+use App\Controllers\Api\AuthController;
 use App\Controllers\Api\CourseController;
 use App\Controllers\Api\CustomerController;
 
 return function ($router) {
+    // Auth
+    $router->addRoute('POST', '/auth/login', [AuthController::class, 'login']);
+    $router->addRoute('POST', '/auth/register', [AuthController::class, 'register']);
+    $router->addRoute('POST', '/auth/logout', [AuthController::class, 'logout']);
+
     // Customers
     $router->addRoute('GET', '/customers', [CustomerController::class, 'index']);
     $router->addRoute('POST', '/customers', [CustomerController::class, 'create']);
